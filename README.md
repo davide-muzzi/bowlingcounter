@@ -1,2 +1,4 @@
-# bowlingcounter
-School Task about MVP
+# Bowling Counter
+
+Attempted using Flask, didn't work...
+Used a new approach with HTML and a bit of embedded JS. Works more or less...

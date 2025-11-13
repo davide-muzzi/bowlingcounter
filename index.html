@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Bowlingcounter (MVP)</title>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        max-width: 730px;
+        margin: 40px auto;
+        padding: 0 16px;
+      }
+
+      h1 {
+        margin-bottom: 0.25rem;
+      }
+
+      .meta p {
+        margin: 0.15rem 0;
+      }
+
+      .buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 10px 0 4px;
+      }
+
+      button {
+        padding: 6px 10px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        background: #f5f5f5;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: #e7e7e7;
+      }
+
+      button:disabled {
+        opacity: 0.4;
+        cursor: default;
+      }
+
+      .pill {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 999px;
+        border: 1px solid #ddd;
+        margin: 2px;
+        font-size: 0.9rem;
+      }
+
+      .scorecard {
+        margin-top: 18px;
+      }
+
+      .small {
+        font-size: 0.9rem;
+        color: #555;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Bowlingcounter (MVP)</h1>
+
+    <section class="meta">
+      <p><strong>Aktueller Frame:</strong> <span id="frame"></span></p>
+      <p><strong>Wurf im Frame:</strong> <span id="rollInFrame"></span></p>
+      <p><strong>Noch stehende Pins:</strong> <span id="pinsLeft"></span></p>
+      <p>
+        <strong>Gesamtpunkte (MVP, ohne Strike-/Spare-Boni):</strong>
+        <span id="totalScore"></span>
+      </p>
+      <p id="gameOverMsg" style="font-weight: bold; color: #c00"></p>
+    </section>
+
+    <section>
+      <h2>Wurf auswählen</h2>
+      <p class="small">Klicke, wie viele Pins du in diesem Wurf triffst.</p>
+      <div id="buttons" class="buttons"></div>
+      <button id="resetBtn" style="margin-top: 8px">Neues Spiel</button>
+    </section>
+
+    <section class="scorecard">
+      <h2>Würfe</h2>
+      <div id="rollsContainer"></div>
+    </section>
+
+    <script>
+      // --------- Game State ---------
+      const gameState = {
+        frame: 1,
+        rollInFrame: 1,
+        pinsLeft: 10,
+        rolls: [], // each element = number of pins knocked down
+      };
+
+      function resetGame() {
+        gameState.frame = 1;
+        gameState.rollInFrame = 1;
+        gameState.pinsLeft = 10;
+        gameState.rolls = [];
+        render();
+      }
+
+      // super simplified bowling: just track frames & pins, no bonus logic
+      function roll(pins) {
+        if (gameState.frame > 10) return; // game over, ignore
+
+        // clamp value for safety
+        pins = Math.max(0, Math.min(pins, gameState.pinsLeft));
+        gameState.rolls.push(pins);
+
+        if (gameState.rollInFrame === 1) {
+          // strike (except 10. Frame logic, which we ignore here)
+          if (pins === 10 && gameState.frame < 10) {
+            gameState.frame += 1;
+            gameState.rollInFrame = 1;
+            gameState.pinsLeft = 10;
+          } else {
+            gameState.rollInFrame = 2;
+            gameState.pinsLeft = 10 - pins;
+          }
+        } else {
+          // second roll -> next frame
+          gameState.frame += 1;
+          gameState.rollInFrame = 1;
+          gameState.pinsLeft = 10;
+        }
+
+        render();
+      }
+
+      // --------- UI Rendering ---------
+      function render() {
+        const frameEl = document.getElementById("frame");
+        const rollInFrameEl = document.getElementById("rollInFrame");
+        const pinsLeftEl = document.getElementById("pinsLeft");
+        const totalScoreEl = document.getElementById("totalScore");
+        const gameOverMsgEl = document.getElementById("gameOverMsg");
+        const buttonsContainer = document.getElementById("buttons");
+        const rollsContainer = document.getElementById("rollsContainer");
+        const resetBtn = document.getElementById("resetBtn");
+
+        const gameOver = gameState.frame > 10;
+        const totalScore = gameState.rolls.reduce((sum, r) => sum + r, 0);
+
+        frameEl.textContent = Math.min(gameState.frame, 10);
+        rollInFrameEl.textContent = gameOver ? "-" : gameState.rollInFrame;
+        pinsLeftEl.textContent = gameOver ? "0" : gameState.pinsLeft;
+        totalScoreEl.textContent = totalScore;
+
+        gameOverMsgEl.textContent = gameOver
+          ? "Spiel vorbei – starte ein neues Spiel."
+          : "";
+
+        // build pin buttons dynamically based on pinsLeft
+        buttonsContainer.innerHTML = "";
+        if (!gameOver) {
+          for (let i = 0; i <= gameState.pinsLeft; i++) {
+            const btn = document.createElement("button");
+            btn.textContent = i;
+            btn.addEventListener("click", () => roll(i));
+            buttonsContainer.appendChild(btn);
+          }
+        }
+
+        // show all rolls as pills
+        rollsContainer.innerHTML = "";
+        if (gameState.rolls.length === 0) {
+          rollsContainer.textContent = "Noch keine Würfe.";
+        } else {
+          gameState.rolls.forEach((r, idx) => {
+            const span = document.createElement("span");
+            span.className = "pill";
+            span.textContent = `Wurf ${idx + 1}: ${r}`;
+            rollsContainer.appendChild(span);
+          });
+        }
+
+        resetBtn.onclick = resetGame;
+      }
+
+      // first render when page loads
+      render();
+    </script>
+  </body>
+</html>
