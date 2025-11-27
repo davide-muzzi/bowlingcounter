@@ -108,6 +108,23 @@ def bowl():
 
     return redirect(url_for("show_game"))
 
+@app.route("/restart")
+def restart_player():
+    player_id = int(request.args.get("id"))
+    if player_id in players:
+        players[player_id]["frames"] = reset_frames()
+        players[player_id]["current_frame"] = 1
+    return redirect(url_for("show_game"))
+
+
+@app.route("/restart_all")
+def restart_all():
+    for p in players.values():
+        p["frames"] = reset_frames()
+        p["current_frame"] = 1
+    return redirect(url_for("show_game"))
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

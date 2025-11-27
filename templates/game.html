@@ -59,6 +59,7 @@
         <td>{{ total }}</td>
         <td>
           <a href="/bowl?id={{ pid }}">Roll 🎳</a> |
+          <a href="/restart?id={{ pid }}">Restart 🔁</a> |
           <a href="/remove_player?id={{ pid }}">Remove ❌</a>
         </td>
       </tr>
@@ -70,6 +71,10 @@
     <form action="/add_player">
       <input type="text" name="name" placeholder="Player name" />
       <button class="btn">Add Player</button>
+    </form>
+
+    <form action="/restart_all">
+      <button class="btn" style="background: orange">Restart All 🔄</button>
     </form>
   </body>
 </html>
