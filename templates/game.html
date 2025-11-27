@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Bowling Counter</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 30px;
+      }
+      table {
+        border-collapse: collapse;
+        width: 60%;
+        margin-bottom: 20px;
+      }
+      th,
+      td {
+        border: 1px solid black;
+        padding: 8px;
+        text-align: center;
+      }
+      .btn {
+        padding: 12px 24px;
+        font-size: 18px;
+        background: #0078ff;
+        border: none;
+        border-radius: 6px;
+        color: white;
+        cursor: pointer;
+      }
+      .btn:hover {
+        background: #005fcc;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Bowling Scoreboard</h1>
+
+    <p>
+      Current Frame:
+      <strong
+        >{{ current_frame if current_frame <= 10 else "Game Over" }}</strong
+      >
+    </p>
+
+    <table>
+      <tr>
+        <th>Frame</th>
+        <th>State</th>
+        <th>Points</th>
+      </tr>
+
+      {% for frame, data in frames.items() %}
+      <tr>
+        <td>{{ frame }}</td>
+        <td>{{ data.state }}</td>
+        <td>{{ data.points }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+
+    <form action="/bowl">
+      <button class="btn">Roll Ball 🎳</button>
+    </form>
+  </body>
+</html>
