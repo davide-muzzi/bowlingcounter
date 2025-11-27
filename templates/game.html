@@ -35,7 +35,6 @@
 
     <table>
       <tr>
-        <th>ID</th>
         <th>Player</th>
         {% for i in range(1, 11) %}
         <th>F{{ i }}</th>
@@ -46,7 +45,6 @@
 
       {% for pid, p in players.items() %}
       <tr>
-        <td>{{ pid }}</td>
         <td>{{ p.name }}</td>
 
         {% set total = 0 %} {% for f in range(1, 11) %} {% set total = total +
